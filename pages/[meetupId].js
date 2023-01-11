@@ -1,12 +1,14 @@
 // import { MongoClient } from "mongodb";
+
+import CustomHead from "../components/head";
 import MeetupDetail from "../components/meetups/MeetupDetail";
-import { connectToDB } from "../utils/mongodb";
-import getAll, { getMeetups } from "./api/meetups/getAll";
+import { connectToDB, ObjectId } from "../utils/mongodb";
 
 function MeetupDetailPage(props) {
     const { image, title, description, address } = props.meetupData;
     return (
         <>
+        <CustomHead title={title} description={description} />
             <MeetupDetail
                 image={image}
                 title={title}
@@ -35,18 +37,18 @@ export async function getStaticProps(context) {
     const { client, db } = await connectToDB();
     const meetupId = context.params.meetupId;
     const meetupsCollection = db.collection("meetups");
-    const response = await meetupsCollection.findOne({ _id: meetupId });
-    console.log("GET ONE", response);
+    const response = await meetupsCollection.findOne({ _id: ObjectId(meetupId) });
+
     client.close();
     return {
         props: {
-            meetupData: {
+            meetupData: response ? {
                 id: response._id.toString(),
                 title: response.title,
                 image: response.image,
                 address: response.address,
                 description: response.description,
-            },
+            } : {},
         },
     };
 }
