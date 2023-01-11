@@ -1,12 +1,8 @@
 // /api/meetups/new
-import { MongoClient } from "mongodb";
+import { connectToDB } from "../../../utils/mongodb";
 async function handler(req, res) {
     if (req.method === "POST") {
-        const client = await MongoClient.connect(
-            "mongodb+srv://lucas:admin123@cluster0.g7je4iq.mongodb.net/meetups?retryWrites=true&w=majority"
-        );
-
-        const db = client.db();
+      const { client, db } = await connectToDB();
 
         const meetupsCollection = db.collection("meetups");
 
